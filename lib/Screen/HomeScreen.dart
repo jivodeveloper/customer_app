@@ -274,7 +274,7 @@ class HomeScreenState extends State<HomeScreen>{
             Column(
                 children: [
 
-                  const Align(
+                  Align(
                       alignment: Alignment.topLeft,
                       child:Padding(
                           padding: EdgeInsets.all(10),

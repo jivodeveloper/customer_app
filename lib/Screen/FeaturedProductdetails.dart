@@ -1,7 +1,10 @@
-import 'package:customer_app/Model/CartModel.dart';
 import 'package:customer_app/Model/CartProvider.dart';
 import 'package:customer_app/Screen/CartScreen.dart';
+import 'package:customer_app/Screen/HomeScreen.dart';
+import 'package:customer_app/cart/add_to_cart_button.dart';
+import 'package:customer_app/data/CartService.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import '../Classes/Common.dart';
@@ -94,9 +97,6 @@ class FeaturedProductstate extends State<FeaturedProductdetails>{
                                         child: quantity==0?GestureDetector(
                                             onTap: (){
 
-                                             savetocart();
-                                            //getcartdata();
-
                                               setState((){
 
                                                 cart_layout = true;
@@ -105,7 +105,9 @@ class FeaturedProductstate extends State<FeaturedProductdetails>{
 
                                               });
 
+                                              savetocart();
                                             },
+
                                             child:Visibility(
                                                 visible:add_button,
                                                 child:Container(
@@ -116,13 +118,14 @@ class FeaturedProductstate extends State<FeaturedProductdetails>{
                                                     color: Color(0xFF063A06),
                                                     borderRadius: BorderRadius.all(Radius.circular(15.0)),
                                                   ),
-                                                  child:Center(
+                                                  child:const Center(
                                                     child: Text(
                                                         "ADD", style: TextStyle(color: Colors.white)
                                                     ),
                                                   )
                                                 )
                                             )
+
                                         ): Visibility(
                                             visible: incre_decr,
                                             child: Container(
@@ -164,7 +167,7 @@ class FeaturedProductstate extends State<FeaturedProductdetails>{
                                                            //  increment();
                                                           },
 
-                                                          child:Text(
+                                                          child:const Text(
                                                               "+",style: TextStyle(color:Colors.green,fontSize: 25)
                                                           ),
 
@@ -249,29 +252,29 @@ class FeaturedProductstate extends State<FeaturedProductdetails>{
     );
   }
 
-  // void increment() async{
-  //
-  //   total_quantity = quantity;
-  //
-  //   setState((){
-  //
-  //     total_quantity = total_quantity+1;
-  //     total_amount = total_amount+price;
-  //     quantity = total_quantity;
-  //
-  //   });
-  //
-  //   box = await Hive.openBox<Cart>('Items');
-  //
-  //   Cart cart = Cart();
-  //   cart.qty = total_quantity;
-  //   box.putAt('qty',cart);
-  //
-  //   // Cart cart1 = Cart();
-  //   // cart.price = total_amount;
-  //   // await box.put('price',cart1);
-  //
-  // }
+  void increment() async{
+
+    total_quantity = quantity;
+
+    setState((){
+
+      total_quantity = total_quantity+1;
+      total_amount = total_amount+price;
+      quantity = total_quantity;
+
+    });
+
+    box = await Hive.openBox<Cart>('Items');
+
+    Cart cart = Cart(id:int.parse(widget.p_id) ,name: widget.product_name,price:double.parse(widget.price));
+    box.putAt('qty',cart);
+
+    // Cart cart1 = Cart();
+    // cart.price = total_amount;
+    // await box.put('price',cart1);
+
+  }
+
   //
   // void decrement() async{
   //
@@ -306,46 +309,37 @@ class FeaturedProductstate extends State<FeaturedProductdetails>{
   // }
 
   Future<void> savetocart() async {
+    try{
 
-    /*save in provider*/
+      Cart cart= Cart(id: int.parse(widget.p_id), name: widget.product_name, price:double.parse(widget.price));
+      CartService.add(cart);
 
-    // CartProvider cartProvider = CartProvider();
-    //
-    // cartProvider.p_id = int.parse(widget.p_id);
-    // cartProvider.p_name = widget.product_name;
-    // cartProvider.qty = 1;
-    // cartProvider.price =int.parse(widget.price);
-    // cartProvider.image = widget.product_image;
-    //
-    // quantity = 1;
-    //
-    // var cart = context.read<CartModel>();
-    // cart.add(cartProvider);
 
-    // try {
-    //
-    //   box = await Hive.openBox<Cart>('Items');
-    //   Cart cart = Cart(p_id:int.parse(widget.p_id) ,p_name: widget.product_name,qty:1,price:int.parse(widget.price));
-    //   box.add(cart);
-    //
-    //   quantity = 1;
-    //
-    //   setState((){
-    //
-    //     total_amount = int.parse(widget.price);
-    //
-    //   });
-    //
-    // }catch(e){
-    //
-    //   print("Exception $e");
-    //
-    // }
+      // AddToCartButton(
+      //   actionAfterAdding: (){
+      //     Fluttertoast.showToast(msg: "msg");
+      //   },
+      //   cartModel: Cart(id: int.parse(widget.p_id), name: widget.product_name, price:double.parse(widget.price)),
+      //   child: Container(
+      //     height: 50,
+      //     margin: const EdgeInsets.all(10),
+      //     width: double.infinity,
+      //     decoration: BoxDecoration(
+      //       color: Colors.blue,
+      //       borderRadius: BorderRadius.circular(10),
+      //     ),
+      //     child: const Center(
+      //       child: Text(
+      //         "Add to cart",
+      //         style: TextStyle(color: Colors.white),
+      //       ),
+      //     ),
+      //   ),
+      // );
 
-    _createItem({"p_id":widget.p_id,
-      "p_name":widget.product_name,
-      "qty":widget.quantity,
-      "price":widget.price});
+    }catch(e){
+      print("exception $e");
+    }
 
   }
 
@@ -353,9 +347,9 @@ class FeaturedProductstate extends State<FeaturedProductdetails>{
 
     box = await Hive.box('Items');
     // Cart cart = Cart(p_id:int.parse(widget.p_id),
-     //     p_name:widget.product_name,
-     //     qty:1,
-     //     price:int.parse(widget.price));
+    //     p_name:widget.product_name,
+    //     qty:1,
+    //     price:int.parse(widget.price));
 
     box.add(newItem);
     _refreshItems();
@@ -365,9 +359,10 @@ class FeaturedProductstate extends State<FeaturedProductdetails>{
   void _refreshItems() {
 
     final data = box.keys.map((key) {
+
     final value = box.get(key);
     return {"p_id": value?.p_id,"p_name": value?.p_name, "qty": value?.qty,"price": value?.price};
-    //return {"p_id": value.p_id,"p_name": value.p_name, "qty": value.qty,"price": value.price};
+
     }).toList();
 
     setState(() {
@@ -403,4 +398,101 @@ class FeaturedProductstate extends State<FeaturedProductdetails>{
   //
   // }
 
+  void toast(){
+
+    AddToCartButton(
+      actionAfterAdding: () {
+        Fluttertoast.showToast(
+            msg: "This is a Toast message",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+      },
+      cartModel: Cart(
+        id: int.parse(widget.p_id),
+        name: 'Test',
+        price: 100,
+      ),
+      child: Container(
+        height: 50,
+        margin: const EdgeInsets.all(10),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: const Center(
+          child: Text(
+            "Add to cart",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ),
+    );
+
+  }
+
 }
+
+//
+// class MyPage extends StatefulWidget {
+//   const MyPage({Key? key}) : super(key: key);
+//
+//   @override
+//   State<MyPage> createState() => _MyPageState();
+// }
+//
+// class _MyPageState extends State<MyPage> {
+//   int time = 0;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     print("toastmsg");
+//     toastmsg();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           // ----------------- Add To Cart ----------------- //
+//           AddToCartButton(
+//             actionAfterAdding: () {
+//               Fluttertoast.showToast(msg: "msg");
+//             },
+//             cartModel: Cart(
+//                 id: time,
+//                 name: 'Test',
+//                 price: 100,
+//                 ),
+//             child: Container(
+//               height: 50,
+//               margin: const EdgeInsets.all(10),
+//               width: double.infinity,
+//               decoration: BoxDecoration(
+//                 color: Colors.blue,
+//                 borderRadius: BorderRadius.circular(10),
+//               ),
+//               child: const Center(
+//                 child: Text(
+//                   "Add to cart",
+//                   style: TextStyle(color: Colors.white),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//
+//
+// }
+

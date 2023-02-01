@@ -1,25 +1,27 @@
+import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 part 'Cart.g.dart';
 
 @HiveType(typeId: 0)
-class Cart{
+class Cart extends HiveObject {
 
   @HiveField(0)
-  int? p_id;
-
+  final int id;
   @HiveField(1)
-  String? p_name;
-
+  final String name;
   @HiveField(2)
-  int? qty;
-
+  double price;
   @HiveField(3)
-  int? price;
+  int quantity;
+  @HiveField(4)
+  final Map<String, dynamic> additionalData;
 
   Cart({
-  this.p_id,
-  this.p_name,
-  this.qty,
-  this.price});
+    required this.id,
+    required this.name,
+    required this.price,
+    this.quantity = 1,
+    this.additionalData = const {},
+  });
 
 }

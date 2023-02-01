@@ -7,6 +7,7 @@ part of 'Cart.dart';
 // **************************************************************************
 
 class CartAdapter extends TypeAdapter<Cart> {
+
   @override
   final int typeId = 0;
 
@@ -17,25 +18,28 @@ class CartAdapter extends TypeAdapter<Cart> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Cart(
-      p_id: fields[0] as int?,
-      p_name: fields[1] as String?,
-      qty: fields[2] as int?,
-      price: fields[3] as int?,
+      id: fields[0] as int,
+      name: fields[1] as String,
+      price: fields[3] as double,
+      quantity: fields[4] as int,
+      additionalData: (fields[5] as Map).cast<String, dynamic>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Cart obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
-      ..write(obj.p_id)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.p_name)
-      ..writeByte(2)
-      ..write(obj.qty)
+      ..write(obj.name)
       ..writeByte(3)
-      ..write(obj.price);
+      ..write(obj.price)
+      ..writeByte(4)
+      ..write(obj.quantity)
+      ..writeByte(5)
+      ..write(obj.additionalData);
   }
 
   @override
@@ -44,7 +48,7 @@ class CartAdapter extends TypeAdapter<Cart> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CartAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is CartAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
